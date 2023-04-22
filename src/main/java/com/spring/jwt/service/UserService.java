@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -22,23 +24,19 @@ public class UserService{
     private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
-//    @Override
-//    public List<User> getAllUser(){
-//        return userRepository.findAll();
-//    }
+    public List<User> getAllUser(){
+        return userRepository.findAll();
+    }
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
 
     }
-
     public Role saveRole(Role role) {
         return roleRepository.save(role);
     }
-
-
     public void addToUser(String userName, String roleName) {
-        User user = userRepository.findByUsername(userName).get();
+        User user = userRepository.findByUsername(userName).orElseThrow();
         Role role = roleRepository.findByName(roleName);
         user.getRoles().add(role);
     }

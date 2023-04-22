@@ -28,7 +28,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                .requestMatchers("/api/auth/users/**").hasAnyAuthority("ROLE_USER")
+                .requestMatchers("/api/auth/user/**").hasAnyAuthority("ROLE_USER")
                 .requestMatchers("/api/auth/admin/**").hasAnyAuthority("ROLE_ADMIN")
                 .and()
                 .csrf()

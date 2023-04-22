@@ -1,4 +1,4 @@
-package com.spring.jwt.auth;
+package com.spring.jwt.model.login;
 
 import lombok.*;
 
@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AuthResponse {
+public class LoginResponse {
+    private String id;
     private String token;
 }

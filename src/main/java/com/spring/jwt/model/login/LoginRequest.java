@@ -1,4 +1,4 @@
-package com.spring.jwt.auth;
+package com.spring.jwt.model.login;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AuthRequest {
+public class LoginRequest {
     private String username;
     private String password;
 }

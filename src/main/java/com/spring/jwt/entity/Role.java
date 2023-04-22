@@ -19,8 +19,10 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "role_id")
+    private Long id;
 
+    @Column(name = "role_name")
     private String name;
 
     @ManyToMany(mappedBy = "roles")
@@ -28,7 +30,7 @@ public class Role {
     @JsonIgnore
     private Set<User> user = new HashSet<>();
 
-    public Role(Integer id,String name) {
+    public Role(Long id,String name) {
         this.id = id;
         this.name = name;
     }

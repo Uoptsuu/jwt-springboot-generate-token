@@ -1,5 +1,6 @@
 package com.spring.jwt.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
@@ -14,37 +15,46 @@ import java.util.*;
 @Setter
 @Data
 @NoArgsConstructor
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
+@AllArgsConstructor
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "user_id")
+    private Long id;
+    @Column(name = "username")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "is_active")
     private boolean isActive;
+    @Column(name = "user_address")
+    private String address;
+    @Column(name = "is_delete")
     private boolean isDelete;
 
     @ManyToMany
+    @JsonIgnore
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    public User(Integer id, String username, String password, Set<Role> roles) {
+    public User(Long id, String username, String password, String address) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.address = address;
         this.isActive = true;
         this.isDelete = false;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<SimpleGrantedAuthority> authories = new ArrayList<>();
-        roles.stream().forEach(i->authories.add(new SimpleGrantedAuthority(i.getName())));
-        return List.of(new SimpleGrantedAuthority(authories.toString()));
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        roles.forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
+        return List.of(new SimpleGrantedAuthority(authorities.toString()));
     }
 
     @Override
@@ -77,10 +87,4 @@ public class User implements UserDetails {
         return this.isActive;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "username='" + this.username + '\'' +
-                '}';
-    }
 }

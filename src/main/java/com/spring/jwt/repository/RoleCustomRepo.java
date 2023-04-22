@@ -19,7 +19,7 @@ public class RoleCustomRepo {
         StringBuilder sql = new StringBuilder()
                 .append("select r.role_name as name from users u join user_role ur on u.user_id = ur.user_id join roles r on r.role_id = ur.role_id");
 
-        if(user.getUsername()!=null){
+        if(user.getUsername() != null){
             sql.append(" where username =:username");
         }
         NativeQuery<Role> query = ((Session) entityManager.getDelegate()).createNativeQuery(sql.toString());

@@ -1,7 +1,7 @@
 package com.spring.jwt.service;
 
-import com.spring.jwt.auth.AuthRequest;
-import com.spring.jwt.auth.AuthResponse;
+import com.spring.jwt.model.login.LoginRequest;
+import com.spring.jwt.model.login.LoginResponse;
 import com.spring.jwt.entity.Role;
 import com.spring.jwt.entity.User;
 import com.spring.jwt.repository.RoleCustomRepo;
@@ -9,6 +9,8 @@ import com.spring.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -42,21 +44,22 @@ public class AuthService {
 //        return AuthenticationResponse.builder().token(jwtToken).refreshToken(jwtRefreshToken).build();
 //    }
 
-    public AuthResponse authenticate(AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-        List<Role> role = roleCustomRepo.getRole(user);
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        Set<Role> set = new HashSet<>();
-        role.stream().forEach(c->set.add(new Role(c.getName())));
-        user.setRoles(set);
-        set.stream().forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
-        var jwtToken = jwtService.generateToken(user,authorities);
-        return AuthResponse.builder().token(jwtToken).build();
+    public LoginResponse authenticateLogin(LoginRequest loginRequest) {
+        try {
+            Authentication authenticate = authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
+            if (authenticate.isAuthenticated()) {
+                User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow();
+                List<Role> role = roleCustomRepo.getRole(user);
+                Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                Set<Role> set = new HashSet<>();
+                role.forEach(c->set.add(new Role(c.getName())));
+                user.setRoles(set);
+                set.forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
+                var jwtToken = jwtService.generateToken(user,authorities);
+                return LoginResponse.builder().token(jwtToken).build();
+            } else return new LoginResponse();
+        } catch (AuthenticationException authenticationException){
+            return new LoginResponse();
+        }
     }
 }
