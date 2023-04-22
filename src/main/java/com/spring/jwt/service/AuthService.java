@@ -50,10 +50,7 @@ public class AuthService {
                 )
         );
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-        List<Role> role = null;
-        if(user!=null){
-            role = roleCustomRepo.getRole(user);
-        }
+        List<Role> role = roleCustomRepo.getRole(user);
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         Set<Role> set = new HashSet<>();
         role.stream().forEach(c->set.add(new Role(c.getName())));
