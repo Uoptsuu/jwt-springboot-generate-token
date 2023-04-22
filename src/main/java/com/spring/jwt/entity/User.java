@@ -1,6 +1,7 @@
 package com.spring.jwt.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,60 +10,53 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.*;
 
 @Entity
-@Table(name = "users")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@Data
+@NoArgsConstructor
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long id;
-
-    @Column(name = "username")
+    private Integer id;
     private String username;
-
-    @Column(name = "password")
     private String password;
-
-    @Column(name = "is_delete")
+    private boolean isActive;
     private boolean isDelete;
 
-    @Column(name= "is_active")
-    private boolean isActive;
+    @ManyToMany
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id"))
-    private Set<Role> roles;
-
-    public User(Long id, String username, String password) {
+    public User(Integer id, String username, String password, Set<Role> roles) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.roles = new HashSet<>();
+        this.roles = roles;
         this.isActive = true;
         this.isDelete = false;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        roles.stream().forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
-        return List.of(new SimpleGrantedAuthority(authorities.toString()));
+        Collection<SimpleGrantedAuthority> authories = new ArrayList<>();
+        roles.stream().forEach(i->authories.add(new SimpleGrantedAuthority(i.getName())));
+        return List.of(new SimpleGrantedAuthority(authories.toString()));
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return this.username;
     }
+
     @Override
-    public String getPassword() {
-        return password;
+    public String getPassword(){
+        return this.password;
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

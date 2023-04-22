@@ -1,9 +1,5 @@
 package com.spring.jwt;
 
-import com.spring.jwt.entity.Role;
-import com.spring.jwt.entity.User;
-import com.spring.jwt.service.UserService;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

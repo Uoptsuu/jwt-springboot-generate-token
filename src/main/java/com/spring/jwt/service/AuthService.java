@@ -18,12 +18,38 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
+    //private final UserServiceImp userServiceImp;
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RoleCustomRepo roleCustomRepo;
-    private final JwtService jwtService;
-    public AuthResponse authenticate(AuthRequest authRequest){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(),authRequest.getPassword()));
-        User user = userRepository.findByUsername(authRequest.getUsername()).orElseThrow();
+
+//    public AuthResponse register(RegisterRequest request) {
+//
+//        if(userRepository.findUserByEmail(request.getEmail()).isPresent()){
+//            throw new IllegalStateException("username taken");
+//        }
+//        Role role = new Role("ROLE_USER");
+//        User user = new User(null,request.getFullname(), request.getEmail(), request.getPassword(),new HashSet<>());
+//        userServiceImp.saveUser(user);
+//        userServiceImp.addToUser(user.getEmail(),role.getName());
+//        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+//        Set<Role> set = new HashSet<>();
+//        set.add(new Role(role.getName()));
+//        set.forEach(i->authorities.add(new SimpleGrantedAuthority(i.getName())));
+//        user.setRoles(set);
+//        var jwtToken = jwtService.generateToken(user,authorities);
+//        var jwtRefreshToken = jwtService.generateRefreshToken(user,authorities);
+//        return AuthenticationResponse.builder().token(jwtToken).refreshToken(jwtRefreshToken).build();
+//    }
+
+    public AuthResponse authenticate(AuthRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
         List<Role> role = null;
         if(user!=null){
             role = roleCustomRepo.getRole(user);

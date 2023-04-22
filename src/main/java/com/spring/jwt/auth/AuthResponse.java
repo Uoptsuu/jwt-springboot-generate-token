@@ -1,4 +1,5 @@
 package com.spring.jwt.auth;
+
 import lombok.*;
 
 @Data
@@ -9,5 +10,4 @@ import lombok.*;
 @Setter
 public class AuthResponse {
     private String token;
-    //private String refreshToken;
 }
